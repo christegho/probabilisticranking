@@ -1,3 +1,4 @@
+close all;
 load tennis_data
 
 randn('seed',27); % set the pseudo-random number generator seed
@@ -7,9 +8,9 @@ N = size(G,1);            % number of games in 2011 season
 
 pv = 0.5*ones(M,1);           % prior skill variance 
 
-iterations = 100;
+iterations = 1000;
 w = zeros(M,iterations);               % set skills to prior mean %Chris changed
-
+w_uncorrelated = zeros(M,iterations/10); 
 for i = 1:iterations
 
   % First, sample performance differences given the skills and outcomes
@@ -53,4 +54,31 @@ for i = 1:iterations
 
   % sample from N(mu, inv(iSS))
   w(:,i) = mu + iR\randn(M,1); %Chris changed
+  if(rem(i-1,10) == 0)
+    w_uncorrelated(:,((i-1)/10)+1) =  mu + iR\randn(M,1); 
+  end
 end
+
+figure
+plot(w(1:3,:)')
+ylabel('iterations')
+xlabel('skill')
+legend('Player1', 'Player2', 'Player3')
+
+figure 
+plot(xcov(w(1:3,:)'))
+legend('Player1', 'Player2', 'Player3')
+
+figure 
+plot(xcov(w(1,:)'))
+legend('Player1')
+
+figure
+plot(w_uncorrelated(1:3,:)')
+ylabel('iterations')
+xlabel('skill')
+legend('Player1', 'Player2', 'Player3')
+
+figure 
+plot(xcov(w_uncorrelated(1,:)'))
+legend('Player1')
