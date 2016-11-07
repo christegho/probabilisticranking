@@ -1,4 +1,4 @@
-function computeProbWin(w,W)
+function P = computeProbWin(w,W)
 mean = mean(w,2); %Calculate mean of each player’s skill
 P = zeros(length(mean),1);
 for player1=1:length(mean)
