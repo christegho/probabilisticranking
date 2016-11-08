@@ -9,7 +9,7 @@ N = size(G,1);            % number of games in 2011 season
 pv = 0.5*ones(M,1);           % prior skill variance 
 
 
-iterations = 1000;
+iterations = 100;
 w = zeros(M,iterations);               % set skills to prior mean %Chris changed
 w_uncorrelated = zeros(M,iterations/10); 
 for i = 1:iterations
@@ -56,8 +56,8 @@ for i = 1:iterations
   for g=1:N
     iS(G(g,1),G(g,1)) = iS(G(g,1),G(g,1))+1;
     iS(G(g,2),G(g,2)) = iS(G(g,2),G(g,2))+1;
-    iS(G(g,1),G(g,2)) = iS(G(g,1),G(g,2))+1;
-    iS(G(g,2),G(g,1)) = iS(G(g,2),G(g,1))+1;
+    iS(G(g,1),G(g,2)) = iS(G(g,1),G(g,2))-1;
+    iS(G(g,2),G(g,1)) = iS(G(g,2),G(g,1))-1;
   end
 
   iSS = diag(1./pv) + iS; % posterior precision matrix
@@ -81,13 +81,13 @@ legend('Player1', 'Player2', 'Player3')
 title('plot of skills for 1000 iterations, without removing any sample')
 
 figure 
-xcovW = xcov(w(1,:)');
+xcovW = xcorr(w(1,:));
 plot(xcovW)
 legend('Player1')
 title('xcov 1000 samples, without removing any sample')
 
 figure 
-plot(xcovW(991:1009))
+plot(xcovW(91:109))
 legend('Player1')
 title('ZOOM xcov 1000 samples, without removing any sample')
 
@@ -99,7 +99,7 @@ legend('Player1', 'Player2', 'Player3')
 title('plot of skills for 1000 iterations retaining every 10th sample')
 
 figure 
-plot(xcov(w_uncorrelated(1,:)'))
+plot(xcorr(w_uncorrelated(1,:)'))
 legend('Player1')
 title('xcov 1000 samples retaing every 10th sample only')
 
