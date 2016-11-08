@@ -81,22 +81,24 @@ legend('Player1', 'Player2', 'Player3')
 title('plot of skills for 1000 iterations, without removing any sample')
 
 figure 
-xcovW = xcov(w(1,:)');
+xcovW = xcov(w(1,:)')
 plot(xcovW)
 legend('Player1')
 title('xcov 1000 samples, without removing any sample')
 
 figure 
-plot(xcovW(991:1009))
+xcovW = xcov(w(1,:)')
+plot(xcovW)
 legend('Player1')
-title('ZOOM xcov 1000 samples, without removing any sample')
+title('xcov 1000 samples, without removing any sample')
+
 
 figure
 plot(w_uncorrelated(1:3,:)')
 ylabel('iterations')
 xlabel('skill')
 legend('Player1', 'Player2', 'Player3')
-title('plot of skills for 1000 iterations retaining every 10th sample')
+title('ZOOM - plot of skills for 1000 iterations retaining every 10th sample')
 
 figure 
 plot(xcov(w_uncorrelated(1,:)'))
