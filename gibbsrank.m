@@ -8,7 +8,7 @@ N = size(G,1);            % number of games in 2011 season
 
 pv = 0.5*ones(M,1);           % prior skill variance 
 
-iterations = 100;
+iterations = 1000;
 w = zeros(M,iterations);               % set skills to prior mean %Chris changed
 w_uncorrelated = zeros(M,iterations/10); 
 for i = 1:iterations
@@ -46,11 +46,18 @@ for i = 1:iterations
 %      end
 %    end
     
-    p = meshgrid(1:107);
-    k = p';
-    for g=1:N
-      iS+=((p-G(g,1))==0).*(((k-G(g,2))==0).^(p-k!=0))+((p-G(g,2))==0).*(((k-G(g,1))==0).^(p-k!=0));
-    end
+%    p = meshgrid(1:107);
+%    k = p';
+%    for g=1:N
+%      iS+=((p-G(g,1))==0).*(((k-G(g,2))==0).^(p-k!=0))+((p-G(g,2))==0).*(((k-G(g,1))==0).^(p-k!=0));
+%    end
+
+  for g=1:N
+    iS(G(g,1),G(g,1)) += 1;
+    iS(G(g,2),G(g,2)) += 1;
+    iS(G(g,1),G(g,2)) -= 1;
+    iS(G(g,2),G(g,1)) -= 1;
+  end
   iSS = diag(1./pv) + iS; % posterior precision matrix
   % prepare to sample from a multivariate Gaussian
   % Note: inv(M)*z = R\(R'\z) where R = chol(M);
