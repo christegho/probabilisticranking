@@ -7,7 +7,7 @@ P = zeros(length(W),1);
 for k = 1:length(W)
   games = sum(G == k);
   gamesplayed = games(:,1)+games(:,2);
-  if (gamesplayed!=0)
+  if (gamesplayed~=0)
     P(k) = games(:,1)/gamesplayed;
   end
 end

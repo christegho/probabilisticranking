@@ -1,10 +1,11 @@
 function P = computeProbWin(w,W)
-mean = mean(w,2); %Calculate mean of each player’s skill
-P = zeros(length(mean),1);
-for player1=1:length(mean)
-   for player2=1:length(mean)
-       P(player1)+= normcdf(mean(player1)-mean(player2));  
+
+P = zeros(length(w),1);
+for player1=1:length(w)
+   for player2=1:length(w)
+       P(player1)=P(player1)+ sum(normcdf(w(player1,:)-w(player2,:)))/size(w,2);  
    end
 end
-P = P/length(mean);
+P = P/107;
 cw2(P,W)
+

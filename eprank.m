@@ -1,4 +1,5 @@
 load tennis_data
+close all
 
 M = size(W,1);            % number of players
 N = size(G,1);            % number of games in 2011 season 
@@ -7,11 +8,11 @@ psi = inline('normpdf(x)./normcdf(x)');
 lambda = inline('(normpdf(x)./normcdf(x)).*( (normpdf(x)./normcdf(x)) + x)');
 
 pv = 0.5;            % prior skill variance (prior mean is always 0)
-iterations = 20;
+iterations = 35;
 % initialize matrices of skill marginals - means and precisions
 Ms = nan(M, 1); 
 Ps = nan(M, 1);
-mean = nan(M,iterations); 
+meanEP = nan(M,iterations); 
 variance = nan(M,iterations);
 
 % initialize matrices of game to skill messages - means and precisions
@@ -53,7 +54,18 @@ for iter=1:iterations
   Mgs = [mtg, -mtg] + Msg(:,[2 1]);
 
   means(:, iter) = Ms;
-  variance(:, iter) = Ps;
+  variance(:, iter) = 1./Ps;
 end
+figure
+plot(means(1:3,:)');
+legend('Player 1', 'Player 2', 'Player 3');
+xlabel('Iteration')
+ylabel('Mean of posterior marginal of skills')
 
+
+figure
+plot(variance(1:3,:)');
+legend('Player 1', 'Player 2', 'Player 3');
+xlabel('Iteration')
+ylabel('Variance of posterior marginal of skills')
 

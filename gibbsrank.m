@@ -9,9 +9,12 @@ N = size(G,1);            % number of games in 2011 season
 pv = 0.5*ones(M,1);           % prior skill variance 
 
 
-iterations = 100;
-w = zeros(M,iterations);               % set skills to prior mean %Chris changed
-w_uncorrelated = zeros(M,iterations/10); 
+iterations = 1020;
+w = zeros(M,1);               % set skills to prior mean %Chris changed
+w_u1 = zeros(M,iterations);
+pl1 = zeros(iterations,1);
+w_u10 = zeros(M,iterations/10); 
+
 for i = 1:iterations
 
   % First, sample performance differences given the skills and outcomes
@@ -36,22 +39,6 @@ for i = 1:iterations
   
   iS = zeros(M,M); % container for the sum of precision matrices contributed
                    % by all the games (likelihood terms)
-  
-%    for p = 1:M
-%      for k = 1:M
-%        if (p==k)
-%          iS(p,k) = sum(((p-G(:,1))==0)+((p-G(:,2))==0));
-%        else
-%          iS(p,k) = -sum(((p-G(:,1))==0).*((k-G(:,2))==0)+((p-G(:,2))==0).*((k-G(:,1))==0));
-%        end
-%      end
-%    end
-    
-%    p = meshgrid(1:107);
-%    k = p';
-%    for g=1:N
-%      iS+=((p-G(g,1))==0).*(((k-G(g,2))==0).^(p-k!=0))+((p-G(g,2))==0).*(((k-G(g,1))==0).^(p-k!=0));
-%    end
 
   for g=1:N
     iS(G(g,1),G(g,1)) = iS(G(g,1),G(g,1))+1;
@@ -67,39 +54,40 @@ for i = 1:iterations
   mu = iR\(iR'\m); % equivalent to inv(iSS)*m but more efficient
 
   % sample from N(mu, inv(iSS))
-  w(:,i) = mu + iR\randn(M,1); %Chris changed
+  w = mu + iR\randn(M,1); 
+  pl1(i) = w(1);
+  w_u1(:,i) = mu + iR\randn(M,1); 
   if(rem(i-1,10) == 0)
-    w_uncorrelated(:,((i-1)/10)+1) =  mu + iR\randn(M,1); 
+    w_u10(:,((i-1)/10)+1) =  mu + iR\randn(M,1); 
   end
+  
 end
+[covVal, lags] = xcov(w_u1(1,:),100,'coeff');
+plot(lags,covVal);
+xlabel('Lags');
+ylabel('Autocorrelation');
+legend('Player 1');
+title('Autocorrelation for amples for 10000 iterations without thinning')
+
+figure 
+plot(w_u1(1:3,:)');
+xlabel('Iterations');
+ylabel('Skill');
+title('100 samples generated without thinning - seed nb 33')
+legend('Player 1', 'Player 2', 'Player 3');
 
 figure
-plot(w(1:3,:)')
-xlabel('iterations')
-ylabel('skill')
-legend('Player1', 'Player2', 'Player3')
-title('plot of skills for 1000 iterations, without removing any sample')
+[covVal, lags] = xcov(w_u10(1,3:end),100,'coeff');
+plot(lags,covVal);
+xlabel('Lags');
+ylabel('Autocorrelation');
+legend('Player 1');
+title('Autocorrelation for samples for 1000 iterations with thinning and burn in')
+
 
 figure 
-xcovW = xcorr(w(1,:));
-plot(xcovW)
-legend('Player1')
-title('xcov 1000 samples, without removing any sample')
-
-figure 
-plot(xcovW(91:109))
-legend('Player1')
-title('ZOOM xcov 1000 samples, without removing any sample')
-
-figure
-plot(w_uncorrelated(1:3,:)')
-ylabel('iterations')
-xlabel('skill')
-legend('Player1', 'Player2', 'Player3')
-title('plot of skills for 1000 iterations retaining every 10th sample')
-
-figure 
-plot(xcorr(w_uncorrelated(1,:)'))
-legend('Player1')
-title('xcov 1000 samples retaing every 10th sample only')
-
+plot(w_u10(1:3,3:end)');
+xlabel('Iterations');
+ylabel('Skill');
+title('100 samples generated after thinning and burn-in')
+legend('Player 1', 'Player 2', 'Player 3');
